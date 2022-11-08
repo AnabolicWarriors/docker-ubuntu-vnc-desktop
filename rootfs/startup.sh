@@ -17,7 +17,7 @@ if [ -n "$OPENBOX_ARGS" ]; then
 fi
 
 if [ -n "$RESOLUTION" ]; then
-    sed -i "s/1024x768/$RESOLUTION/" /usr/local/bin/xvfb.sh
+    sed -i "s/1920x1080/$RESOLUTION/" /usr/local/bin/xvfb.sh
 fi
 
 USER=${USER:-root}
@@ -44,29 +44,6 @@ if [ ! -x "$HOME/.config/pcmanfm/LXDE/" ]; then
     chown -R $USER:$USER $HOME
 fi
 
-# nginx workers
-sed -i 's|worker_processes .*|worker_processes 1;|' /etc/nginx/nginx.conf
-
-# nginx ssl
-if [ -n "$SSL_PORT" ] && [ -e "/etc/nginx/ssl/nginx.key" ]; then
-    echo "* enable SSL"
-	sed -i 's|#_SSL_PORT_#\(.*\)443\(.*\)|\1'$SSL_PORT'\2|' /etc/nginx/sites-enabled/default
-	sed -i 's|#_SSL_PORT_#||' /etc/nginx/sites-enabled/default
-fi
-
-# nginx http base authentication
-if [ -n "$HTTP_PASSWORD" ]; then
-    echo "* enable HTTP base authentication"
-    htpasswd -bc /etc/nginx/.htpasswd $USER $HTTP_PASSWORD
-	sed -i 's|#_HTTP_PASSWORD_#||' /etc/nginx/sites-enabled/default
-fi
-
-# dynamic prefix path renaming
-if [ -n "$RELATIVE_URL_ROOT" ]; then
-    echo "* enable RELATIVE_URL_ROOT: $RELATIVE_URL_ROOT"
-	sed -i 's|#_RELATIVE_URL_ROOT_||' /etc/nginx/sites-enabled/default
-	sed -i 's|_RELATIVE_URL_ROOT_|'$RELATIVE_URL_ROOT'|' /etc/nginx/sites-enabled/default
-fi
 
 # clearup
 PASSWORD=
